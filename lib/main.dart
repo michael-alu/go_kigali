@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'utils/app_theme.dart';
 import 'providers/auth_provider.dart';
+import 'providers/listing_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/email_verification_screen.dart';
 import 'screens/directory_screen.dart';
@@ -16,7 +17,10 @@ void main() async {
 
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => AuthProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => ListingProvider()),
+      ],
       child: const GoKigaliApp(),
     ),
   );
