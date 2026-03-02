@@ -9,7 +9,7 @@ import 'providers/auth_provider.dart';
 import 'providers/listing_provider.dart';
 import 'screens/auth/login_screen.dart';
 import 'screens/auth/email_verification_screen.dart';
-import 'screens/directory_screen.dart';
+import 'screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -77,7 +77,7 @@ class AuthWrapper extends StatelessWidget {
         authProvider.loadUserProfile();
 
         // Temporarily go to placeholder DirectoryScreen
-        return const DirectoryScreen();
+        return const HomeScreen();
       },
     );
   }
