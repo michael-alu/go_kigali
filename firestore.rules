@@ -1,0 +1,44 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Base rule: Deny all by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    // Users Collection
+    // - Authenticated users can read minimal public profiles (if needed later)
+    // - Users can only create/update their own profile
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && request.auth.uid == userId;
+      allow delete: if false; // Users shouldn't delete their own record easily without cloud functions
+    }
+
+    // Listings Collection
+    // - Any authenticated user can read all listings
+    // - Any authenticated user can create a listing, provided their UID is attached as the creator
+    // - ONLY the creator can update or delete their specific listing
+    match /listings/{listingId} {
+      allow read: if isAuthenticated();
+      
+      // Ensure the 'createdBy' field matches the current user's UID upon creation
+      allow create: if isAuthenticated() && request.resource.data.createdBy == request.auth.uid;
+      
+      // Allow update/delete only if the existing document's 'createdBy' field matches the user's UID
+      // and they aren't trying to change the 'createdBy' field to someone else
+      allow update: if isAuthenticated() 
+                   && resource.data.createdBy == request.auth.uid 
+                   && request.resource.data.createdBy == request.auth.uid;
+                   
+      allow delete: if isAuthenticated() && resource.data.createdBy == request.auth.uid;
+    }
+  }
+}
