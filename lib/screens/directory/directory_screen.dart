@@ -5,6 +5,7 @@ import '../../utils/app_theme.dart';
 import '../../utils/constants.dart';
 import '../../widgets/listing_card.dart';
 import '../../widgets/category_chip.dart';
+import '../../widgets/loading_shimmer.dart';
 import 'listing_detail_screen.dart';
 
 class DirectoryScreen extends StatelessWidget {
@@ -15,7 +16,36 @@ class DirectoryScreen extends StatelessWidget {
     final listingProvider = Provider.of<ListingProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Kigali City')),
+      appBar: AppBar(
+        title: const Text('Kigali City'),
+        actions: [
+          // Show listing count badge
+          if (listingProvider.filteredListings.isNotEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppTheme.accentGold.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    '${listingProvider.filteredListings.length}',
+                    style: const TextStyle(
+                      color: AppTheme.accentGold,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
       body: Column(
         children: [
           // Search Bar
@@ -64,30 +94,31 @@ class DirectoryScreen extends StatelessWidget {
 
   Widget _buildListingsList(BuildContext context, ListingProvider provider) {
     if (provider.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const LoadingShimmer();
+    }
+
+    if (provider.error != null) {
+      return const ErrorStateWidget(
+        icon: Icons.error_outline,
+        message: 'Something went wrong',
+        subtitle: 'Could not load the directory. Please try again.',
+      );
     }
 
     final listings = provider.filteredListings;
 
     if (listings.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.search_off, size: 64, color: AppTheme.textHint),
-            const SizedBox(height: 16),
-            const Text(
-              'No listings found',
-              style: TextStyle(color: AppTheme.textSecondary, fontSize: 16),
-            ),
-            if (provider.searchQuery.isNotEmpty ||
-                provider.selectedCategory != null)
-              TextButton(
-                onPressed: () => provider.clearFilters(),
-                child: const Text('Clear filters'),
-              ),
-          ],
-        ),
+      return ErrorStateWidget(
+        icon: Icons.search_off,
+        message: 'No listings found',
+        subtitle:
+            provider.searchQuery.isNotEmpty || provider.selectedCategory != null
+            ? 'Try adjusting your filters'
+            : 'Be the first to add a listing!',
+        onRetry:
+            provider.searchQuery.isNotEmpty || provider.selectedCategory != null
+            ? () => provider.clearFilters()
+            : null,
       );
     }
 
@@ -96,16 +127,20 @@ class DirectoryScreen extends StatelessWidget {
       itemCount: listings.length,
       itemBuilder: (context, index) {
         final listing = listings[index];
-        return ListingCard(
-          listing: listing,
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ListingDetailScreen(listing: listing),
-              ),
-            );
-          },
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 300),
+          child: ListingCard(
+            key: ValueKey(listing.id),
+            listing: listing,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ListingDetailScreen(listing: listing),
+                ),
+              );
+            },
+          ),
         );
       },
     );

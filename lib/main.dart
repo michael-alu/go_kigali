@@ -44,7 +44,7 @@ class GoKigaliApp extends StatelessWidget {
 /// and decides which screen to show:
 /// 1. Logged out -> LoginScreen
 /// 2. Logged in, not verified -> EmailVerificationScreen
-/// 3. Logged in, verified -> DirectoryScreen (or Home Shell)
+/// 3. Logged in, verified -> HomeScreen
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
 
@@ -56,9 +56,7 @@ class AuthWrapper extends StatelessWidget {
       stream: authProvider.authStateChanges,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
+          return const _SplashScreen();
         }
 
         final user = snapshot.data;
@@ -67,18 +65,52 @@ class AuthWrapper extends StatelessWidget {
           return const LoginScreen();
         }
 
-        // If user is logged in but email isn't verified
         if (!user.emailVerified) {
           return const EmailVerificationScreen();
         }
 
-        // User is logged in AND verified.
-        // Also ensure user profile state is loaded from Firestore.
         authProvider.loadUserProfile();
-
-        // Temporarily go to placeholder DirectoryScreen
         return const HomeScreen();
       },
+    );
+  }
+}
+
+/// A branded splash screen shown while Firebase initializes
+class _SplashScreen extends StatelessWidget {
+  const _SplashScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.location_city, size: 80, color: AppTheme.accentGold),
+            const SizedBox(height: 24),
+            const Text(
+              'GoKigali',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Discover Kigali',
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+            ),
+            const SizedBox(height: 32),
+            const SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
