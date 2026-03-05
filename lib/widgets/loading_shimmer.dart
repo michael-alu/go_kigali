@@ -146,8 +146,25 @@ class ErrorStateWidget extends StatelessWidget {
               const SizedBox(height: 20),
               ElevatedButton.icon(
                 onPressed: onRetry,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Retry'),
+                icon: const Icon(Icons.refresh, color: AppTheme.primaryDark),
+                label: const Text(
+                  'Retry',
+                  style: TextStyle(
+                    color: AppTheme.primaryDark,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.accentGold,
+                  foregroundColor: AppTheme.primaryDark,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
               ),
             ],
           ],
