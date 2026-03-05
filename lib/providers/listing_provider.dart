@@ -46,6 +46,7 @@ class ListingProvider extends ChangeNotifier {
   /// Start listening to all listings from Firestore
   void initDirectory() {
     _isLoading = true;
+    _error = null;
     notifyListeners();
 
     _allListingsSub?.cancel();
@@ -53,6 +54,7 @@ class ListingProvider extends ChangeNotifier {
       (listings) {
         _allListings = listings;
         _isLoading = false;
+        _error = null;
         notifyListeners();
       },
       onError: (e) {
@@ -65,12 +67,14 @@ class ListingProvider extends ChangeNotifier {
 
   /// Start listening to user-specific listings from Firestore
   void initUserListings(String userId) {
+    _error = null;
     _userListingsSub?.cancel();
     _userListingsSub = _listingService
         .getUserListings(userId)
         .listen(
           (listings) {
             _userListings = listings;
+            _error = null;
             notifyListeners();
           },
           onError: (e) {
