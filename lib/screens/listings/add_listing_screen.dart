@@ -35,6 +35,21 @@ class _AddListingScreenState extends State<AddListingScreen> {
     super.dispose();
   }
 
+  void _handleCoordinatePaste(String value) {
+    final parts = value.split(',');
+    if (parts.length == 2) {
+      final lat = double.tryParse(parts[0].trim());
+      final lng = double.tryParse(parts[1].trim());
+      if (lat != null && lng != null) {
+        _latController.text = parts[0].trim();
+        _lngController.text = parts[1].trim();
+        _latController.selection = TextSelection.fromPosition(
+          TextPosition(offset: _latController.text.length),
+        );
+      }
+    }
+  }
+
   void _submit() async {
     if (_formKey.currentState!.validate()) {
       FocusScope.of(context).unfocus();
@@ -178,6 +193,7 @@ class _AddListingScreenState extends State<AddListingScreen> {
                       keyboardType: const TextInputType.numberWithOptions(
                         decimal: true,
                       ),
+                      onChanged: _handleCoordinatePaste,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Required';
