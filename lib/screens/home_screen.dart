@@ -34,12 +34,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    listingProvider.initDirectory();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      listingProvider.initDirectory();
 
-    final userId = authProvider.currentUser?.uid;
-    if (userId != null) {
-      listingProvider.initUserListings(userId);
-    }
+      final userId = authProvider.currentUser?.uid;
+      if (userId != null) {
+        listingProvider.initUserListings(userId);
+      }
+    });
   }
 
   @override

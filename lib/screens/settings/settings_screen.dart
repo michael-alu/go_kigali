@@ -152,20 +152,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: OutlinedButton.icon(
-              onPressed: () async {
-                final confirmed = await showDialog<bool>(
+              onPressed: () {
+                showDialog(
                   context: context,
-                  builder: (context) => AlertDialog(
+                  builder: (dialogContext) => AlertDialog(
                     backgroundColor: AppTheme.primaryMedium,
                     title: const Text('Log Out'),
                     content: const Text('Are you sure you want to log out?'),
                     actions: [
                       TextButton(
-                        onPressed: () => Navigator.pop(context, false),
+                        onPressed: () => Navigator.pop(dialogContext),
                         child: const Text('Cancel'),
                       ),
                       TextButton(
-                        onPressed: () => Navigator.pop(context, true),
+                        onPressed: () {
+                          Navigator.pop(dialogContext);
+                          authProvider.logOut();
+                        },
                         child: Text(
                           'Log Out',
                           style: TextStyle(color: AppTheme.errorRed),
@@ -174,10 +177,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ],
                   ),
                 );
-
-                if (confirmed == true && context.mounted) {
-                  await authProvider.logOut();
-                }
               },
               icon: Icon(Icons.logout, color: AppTheme.errorRed),
               label: Text(

@@ -1,17 +1,65 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../models/user_model.dart';
 import '../utils/constants.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
 
   /// Get the current Firebase user
   User? get currentUser => _auth.currentUser;
 
   /// Stream of auth state changes
   Stream<User?> get authStateChanges => _auth.authStateChanges();
+
+  /// Sign in with Google
+  Future<UserModel> signInWithGoogle() async {
+    // Trigger the Google authentication flow (v7.x API)
+    final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
+
+    // Get the idToken from authentication
+    final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+
+    // Create a Firebase credential using the idToken
+    final OAuthCredential credential = GoogleAuthProvider.credential(
+      idToken: googleAuth.idToken,
+    );
+
+    // Sign in to Firebase with the credential
+    final UserCredential userCredential = await _auth.signInWithCredential(
+      credential,
+    );
+    final User user = userCredential.user!;
+
+    // Check if user profile already exists in Firestore
+    final doc = await _firestore
+        .collection(AppConstants.usersCollection)
+        .doc(user.uid)
+        .get();
+
+    if (doc.exists) {
+      return UserModel.fromMap(doc.data()!, user.uid);
+    } else {
+      // If profile doesn't exist yet, create one
+      final UserModel userModel = UserModel(
+        uid: user.uid,
+        email: user.email ?? googleUser.email,
+        displayName:
+            user.displayName ??
+            googleUser.displayName ??
+            googleUser.email.split('@').first,
+        createdAt: DateTime.now(),
+      );
+      await _firestore
+          .collection(AppConstants.usersCollection)
+          .doc(user.uid)
+          .set(userModel.toMap());
+      return userModel;
+    }
+  }
 
   /// Sign up with email and password, then create user profile in Firestore
   Future<UserModel> signUp({
@@ -82,6 +130,7 @@ class AuthService {
 
   /// Log out the current user
   Future<void> logOut() async {
+    await _googleSignIn.signOut();
     await _auth.signOut();
   }
 

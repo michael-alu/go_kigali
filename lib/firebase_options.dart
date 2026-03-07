@@ -26,10 +26,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for ios - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -59,4 +56,16 @@ class DefaultFirebaseOptions {
     projectId: 'go-kigali',
     storageBucket: 'go-kigali.firebasestorage.app',
   );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyAoU-FU8YlM6UqDeVinxHevPj2p_r5fg1M',
+    appId: '1:541060523110:ios:6b9fff2f0afed5e9bc79a7',
+    messagingSenderId: '541060523110',
+    projectId: 'go-kigali',
+    storageBucket: 'go-kigali.firebasestorage.app',
+    androidClientId: '541060523110-mq2d9uqqudeb9uol5grusod3b5i3lqmd.apps.googleusercontent.com',
+    iosClientId: '541060523110-otu4dbq9k3s1escp62msljg3pgnag2hu.apps.googleusercontent.com',
+    iosBundleId: 'com.example.goKigali',
+  );
+
 }
