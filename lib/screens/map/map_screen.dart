@@ -46,6 +46,30 @@ class MapScreen extends StatelessWidget {
     }
   }
 
+  /// Get category icon
+  IconData _getCategoryIcon(String category) {
+    switch (category) {
+      case 'Hospital':
+        return Icons.local_hospital;
+      case 'Police Station':
+        return Icons.local_police;
+      case 'Library':
+        return Icons.menu_book;
+      case 'Restaurant':
+        return Icons.restaurant;
+      case 'Café':
+        return Icons.coffee;
+      case 'Park':
+        return Icons.park;
+      case 'Tourist Attraction':
+        return Icons.camera_alt;
+      case 'Utility Office':
+        return Icons.business;
+      default:
+        return Icons.place;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final listingProvider = Provider.of<ListingProvider>(context);
@@ -67,24 +91,54 @@ class MapScreen extends StatelessWidget {
                 initialZoom: 13.0,
               ),
               children: [
+                // Dark-themed CartoDB tile layer
                 TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                  urlTemplate:
+                      'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+                  subdomains: const ['a', 'b', 'c', 'd'],
                   userAgentPackageName: 'com.example.go_kigali',
+                  maxZoom: 20,
+                  retinaMode: true,
                 ),
+                // Custom styled markers
                 MarkerLayer(
                   markers: listings.map((listing) {
+                    final color = _getMarkerColor(listing.category);
+                    final icon = _getCategoryIcon(listing.category);
                     return Marker(
                       point: LatLng(listing.latitude, listing.longitude),
-                      width: 40,
-                      height: 40,
+                      width: 44,
+                      height: 50,
                       child: GestureDetector(
                         onTap: () {
                           _showListingBottomSheet(context, listing);
                         },
-                        child: Icon(
-                          Icons.location_pin,
-                          color: _getMarkerColor(listing.category),
-                          size: 40,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: color,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2.5,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: color.withValues(alpha: 0.5),
+                                    blurRadius: 8,
+                                    spreadRadius: 1,
+                                  ),
+                                ],
+                              ),
+                              child: Icon(icon, color: Colors.white, size: 18),
+                            ),
+                            // Drop arrow pointer
+                            Icon(Icons.arrow_drop_down, color: color, size: 14),
+                          ],
                         ),
                       ),
                     );

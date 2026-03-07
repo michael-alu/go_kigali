@@ -30,7 +30,7 @@ class ListingDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Embedded Map
+            // Embedded Map — dark themed
             SizedBox(
               height: 220,
               child: FlutterMap(
@@ -38,19 +38,53 @@ class ListingDetailScreen extends StatelessWidget {
                 children: [
                   TileLayer(
                     urlTemplate:
-                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
+                    subdomains: const ['a', 'b', 'c', 'd'],
                     userAgentPackageName: 'com.example.go_kigali',
+                    maxZoom: 20,
+                    retinaMode: true,
                   ),
                   MarkerLayer(
                     markers: [
                       Marker(
                         point: location,
-                        width: 40,
-                        height: 40,
-                        child: const Icon(
-                          Icons.location_pin,
-                          color: AppTheme.errorRed,
-                          size: 40,
+                        width: 44,
+                        height: 50,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 36,
+                              height: 36,
+                              decoration: BoxDecoration(
+                                color: AppTheme.accentGold,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 2.5,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppTheme.accentGold.withValues(
+                                      alpha: 0.5,
+                                    ),
+                                    blurRadius: 8,
+                                    spreadRadius: 1,
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.place,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                            ),
+                            Icon(
+                              Icons.arrow_drop_down,
+                              color: AppTheme.accentGold,
+                              size: 14,
+                            ),
+                          ],
                         ),
                       ),
                     ],

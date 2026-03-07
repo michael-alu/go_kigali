@@ -4,6 +4,9 @@ import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:provider/provider.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'firebase_options.dart';
 import 'utils/app_theme.dart';
 import 'providers/auth_provider.dart';
@@ -15,8 +18,14 @@ import 'screens/home_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  String? clientId;
+  if (!kIsWeb && Platform.isIOS) {
+    clientId = DefaultFirebaseOptions.ios.iosClientId;
+  }
+
   await GoogleSignIn.instance.initialize(
-    clientId: DefaultFirebaseOptions.ios.iosClientId,
+    clientId: clientId,
     serverClientId: DefaultFirebaseOptions.ios.androidClientId,
   );
 
