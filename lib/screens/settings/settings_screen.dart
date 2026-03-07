@@ -24,7 +24,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       body: ListView(
         padding: const EdgeInsets.symmetric(vertical: 8),
         children: [
-          // Profile Section
           Container(
             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             padding: const EdgeInsets.all(20),
@@ -34,7 +33,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             child: Row(
               children: [
-                // Avatar
                 CircleAvatar(
                   radius: 30,
                   backgroundColor: AppTheme.accentGold.withValues(alpha: 0.2),
@@ -50,7 +48,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                // User info
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,7 +103,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           const SizedBox(height: 8),
 
-          // Notifications Section
           _buildSectionHeader('Preferences'),
           _buildSettingTile(
             icon: Icons.notifications_active,
@@ -133,7 +129,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           const SizedBox(height: 8),
 
-          // About Section
           _buildSectionHeader('About'),
           _buildSettingTile(
             icon: Icons.info_outline,
@@ -148,7 +143,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
           const SizedBox(height: 16),
 
-          // Logout Button
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: OutlinedButton.icon(

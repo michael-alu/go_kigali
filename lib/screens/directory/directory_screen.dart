@@ -19,7 +19,6 @@ class DirectoryScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Kigali City'),
         actions: [
-          // Show listing count badge
           if (listingProvider.filteredListings.isNotEmpty)
             Center(
               child: Padding(
@@ -48,7 +47,6 @@ class DirectoryScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // Search Bar
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
             child: TextField(
@@ -67,7 +65,6 @@ class DirectoryScreen extends StatelessWidget {
             ),
           ),
 
-          // Category Filter Chips
           SizedBox(
             height: 44,
             child: ListView(
@@ -85,7 +82,6 @@ class DirectoryScreen extends StatelessWidget {
 
           const SizedBox(height: 8),
 
-          // Listings
           Expanded(child: _buildListingsList(context, listingProvider)),
         ],
       ),

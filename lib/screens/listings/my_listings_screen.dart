@@ -6,7 +6,6 @@ import '../../utils/app_theme.dart';
 import '../../widgets/listing_card.dart';
 import '../directory/listing_detail_screen.dart';
 import 'add_listing_screen.dart';
-import 'edit_listing_screen.dart';
 
 class MyListingsScreen extends StatelessWidget {
   const MyListingsScreen({super.key});
@@ -114,40 +113,18 @@ class MyListingsScreen extends StatelessWidget {
                 );
               },
             ),
-      floatingActionButton: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Edit button for first listing (quick access)
-          if (userListings.isNotEmpty)
-            FloatingActionButton.small(
-              heroTag: 'edit',
-              backgroundColor: AppTheme.primaryLight,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        EditListingScreen(listing: userListings.first),
-                  ),
-                );
-              },
-              child: const Icon(Icons.edit, color: AppTheme.accentGold),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'add',
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) =>
+                  AddListingScreen(userId: authProvider.currentUser!.uid),
             ),
-          const SizedBox(height: 12),
-          FloatingActionButton(
-            heroTag: 'add',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      AddListingScreen(userId: authProvider.currentUser!.uid),
-                ),
-              );
-            },
-            child: const Icon(Icons.add),
-          ),
-        ],
+          );
+        },
+        child: const Icon(Icons.add),
       ),
     );
   }

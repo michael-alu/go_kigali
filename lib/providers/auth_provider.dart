@@ -10,17 +10,14 @@ class AuthProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
 
-  // ── Getters ──
   UserModel? get userModel => _userModel;
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get isLoggedIn => _authService.currentUser != null;
   User? get currentUser => _authService.currentUser;
 
-  /// Stream of auth state changes for reactive UI
   Stream<User?> get authStateChanges => _authService.authStateChanges;
 
-  /// Sign up a new user
   Future<bool> signUp({
     required String email,
     required String password,
@@ -47,7 +44,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Log in with Google
   Future<bool> signInWithGoogle() async {
     _setLoading(true);
     _clearError();
@@ -66,7 +62,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Log in an existing user
   Future<bool> logIn({required String email, required String password}) async {
     _setLoading(true);
     _clearError();
@@ -85,7 +80,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Log out the current user
   Future<void> logOut() async {
     _setLoading(true);
     try {
@@ -98,7 +92,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Send email verification
   Future<void> sendEmailVerification() async {
     try {
       await _authService.sendEmailVerification();
@@ -107,7 +100,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Check if email is verified
   Future<bool> checkEmailVerified() async {
     try {
       return await _authService.isEmailVerified();
@@ -116,7 +108,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Load the user profile from Firestore
   Future<void> loadUserProfile() async {
     final user = _authService.currentUser;
     if (user != null) {
@@ -125,12 +116,9 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  /// Clear any existing error
   void clearError() {
     _clearError();
   }
-
-  // ── Private helpers ──
 
   void _setLoading(bool value) {
     _isLoading = value;
@@ -146,7 +134,6 @@ class AuthProvider extends ChangeNotifier {
     _error = null;
   }
 
-  /// Map Firebase Auth error codes to user-friendly messages
   String _mapAuthError(String code) {
     switch (code) {
       case 'email-already-in-use':

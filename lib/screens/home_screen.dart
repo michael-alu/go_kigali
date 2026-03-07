@@ -27,7 +27,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Initialize listing streams once the home shell loads
     final listingProvider = Provider.of<ListingProvider>(
       context,
       listen: false,

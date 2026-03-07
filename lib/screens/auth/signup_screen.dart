@@ -38,7 +38,6 @@ class _SignupScreenState extends State<SignupScreen> {
       if (!mounted) return;
 
       if (success) {
-        // Will be routed by Auth Wrapper in main.dart to Verification Screen
         Navigator.pop(context);
       } else if (authProvider.error != null) {
         ScaffoldMessenger.of(context).showSnackBar(

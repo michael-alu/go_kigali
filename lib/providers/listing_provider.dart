@@ -6,27 +6,23 @@ import '../services/listing_service.dart';
 class ListingProvider extends ChangeNotifier {
   final ListingService _listingService = ListingService();
 
-  // ── State Variables ──
   List<ListingModel> _allListings = [];
   List<ListingModel> _userListings = [];
 
   bool _isLoading = false;
   String? _error;
 
-  // Search & Filter State
   String _searchQuery = '';
   String? _selectedCategory;
 
   StreamSubscription? _allListingsSub;
   StreamSubscription? _userListingsSub;
 
-  // ── Getters ──
   bool get isLoading => _isLoading;
   String? get error => _error;
   String get searchQuery => _searchQuery;
   String? get selectedCategory => _selectedCategory;
 
-  /// Returns all listings filtered by search query and selected category
   List<ListingModel> get filteredListings {
     return _allListings.where((listing) {
       final matchesSearch = listing.name.toLowerCase().contains(
@@ -38,12 +34,8 @@ class ListingProvider extends ChangeNotifier {
     }).toList();
   }
 
-  /// Returns the authenticated user's listings
   List<ListingModel> get userListings => _userListings;
 
-  // ── Initialization ──
-
-  /// Start listening to all listings from Firestore
   void initDirectory() {
     _isLoading = true;
     _error = null;
@@ -65,7 +57,6 @@ class ListingProvider extends ChangeNotifier {
     );
   }
 
-  /// Start listening to user-specific listings from Firestore
   void initUserListings(String userId) {
     _error = null;
     _userListingsSub?.cancel();
@@ -91,8 +82,6 @@ class ListingProvider extends ChangeNotifier {
     super.dispose();
   }
 
-  // ── Filters ──
-
   void setSearchQuery(String query) {
     _searchQuery = query;
     notifyListeners();
@@ -100,7 +89,7 @@ class ListingProvider extends ChangeNotifier {
 
   void setCategoryFilter(String? category) {
     if (_selectedCategory == category) {
-      _selectedCategory = null; // Toggle off if tapped again
+      _selectedCategory = null;
     } else {
       _selectedCategory = category;
     }
@@ -112,8 +101,6 @@ class ListingProvider extends ChangeNotifier {
     _selectedCategory = null;
     notifyListeners();
   }
-
-  // ── CRUD Operations ──
 
   Future<bool> createListing(ListingModel listing) async {
     _setLoading(true);
@@ -156,8 +143,6 @@ class ListingProvider extends ChangeNotifier {
       return false;
     }
   }
-
-  // ── Helpers ──
 
   void _setLoading(bool value) {
     _isLoading = value;

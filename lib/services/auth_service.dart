@@ -9,32 +9,24 @@ class AuthService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn.instance;
 
-  /// Get the current Firebase user
   User? get currentUser => _auth.currentUser;
 
-  /// Stream of auth state changes
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  /// Sign in with Google
   Future<UserModel> signInWithGoogle() async {
-    // Trigger the Google authentication flow (v7.x API)
     final GoogleSignInAccount googleUser = await _googleSignIn.authenticate();
 
-    // Get the idToken from authentication
     final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
-    // Create a Firebase credential using the idToken
     final OAuthCredential credential = GoogleAuthProvider.credential(
       idToken: googleAuth.idToken,
     );
 
-    // Sign in to Firebase with the credential
     final UserCredential userCredential = await _auth.signInWithCredential(
       credential,
     );
     final User user = userCredential.user!;
 
-    // Check if user profile already exists in Firestore
     final doc = await _firestore
         .collection(AppConstants.usersCollection)
         .doc(user.uid)
@@ -43,7 +35,6 @@ class AuthService {
     if (doc.exists) {
       return UserModel.fromMap(doc.data()!, user.uid);
     } else {
-      // If profile doesn't exist yet, create one
       final UserModel userModel = UserModel(
         uid: user.uid,
         email: user.email ?? googleUser.email,
@@ -61,22 +52,18 @@ class AuthService {
     }
   }
 
-  /// Sign up with email and password, then create user profile in Firestore
   Future<UserModel> signUp({
     required String email,
     required String password,
     required String displayName,
   }) async {
-    // Create user in Firebase Auth
     final UserCredential credential = await _auth
         .createUserWithEmailAndPassword(email: email, password: password);
 
     final User user = credential.user!;
 
-    // Send email verification
     await user.sendEmailVerification();
 
-    // Create user profile in Firestore
     final UserModel userModel = UserModel(
       uid: user.uid,
       email: email,
@@ -92,7 +79,6 @@ class AuthService {
     return userModel;
   }
 
-  /// Log in with email and password
   Future<UserModel> logIn({
     required String email,
     required String password,
@@ -104,7 +90,6 @@ class AuthService {
 
     final User user = credential.user!;
 
-    // Fetch user profile from Firestore
     final doc = await _firestore
         .collection(AppConstants.usersCollection)
         .doc(user.uid)
@@ -113,7 +98,6 @@ class AuthService {
     if (doc.exists) {
       return UserModel.fromMap(doc.data()!, user.uid);
     } else {
-      // If profile doesn't exist yet, create one
       final UserModel userModel = UserModel(
         uid: user.uid,
         email: user.email ?? email,
@@ -128,13 +112,11 @@ class AuthService {
     }
   }
 
-  /// Log out the current user
   Future<void> logOut() async {
     await _googleSignIn.signOut();
     await _auth.signOut();
   }
 
-  /// Send email verification to the current user
   Future<void> sendEmailVerification() async {
     final User? user = _auth.currentUser;
     if (user != null && !user.emailVerified) {
@@ -142,7 +124,6 @@ class AuthService {
     }
   }
 
-  /// Check if the current user's email is verified
   Future<bool> isEmailVerified() async {
     final User? user = _auth.currentUser;
     if (user != null) {
@@ -152,7 +133,6 @@ class AuthService {
     return false;
   }
 
-  /// Fetch user profile from Firestore by UID
   Future<UserModel?> getUserProfile(String uid) async {
     final doc = await _firestore
         .collection(AppConstants.usersCollection)

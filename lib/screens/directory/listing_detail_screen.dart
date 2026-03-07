@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../models/listing_model.dart';
+import '../../providers/auth_provider.dart';
 import '../../utils/app_theme.dart';
+import '../listings/edit_listing_screen.dart';
 
 class ListingDetailScreen extends StatelessWidget {
   final ListingModel listing;
 
   const ListingDetailScreen({super.key, required this.listing});
 
-  /// Launch Google Maps for turn-by-turn navigation to the listing
   Future<void> _launchNavigation() async {
     final url = Uri.parse(
       'https://www.google.com/maps/dir/?api=1&destination=${listing.latitude},${listing.longitude}',
@@ -23,14 +25,29 @@ class ListingDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final location = LatLng(listing.latitude, listing.longitude);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final isOwner = authProvider.currentUser?.uid == listing.createdBy;
 
     return Scaffold(
       appBar: AppBar(title: Text(listing.name)),
+      floatingActionButton: isOwner
+          ? FloatingActionButton(
+              backgroundColor: AppTheme.accentGold,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => EditListingScreen(listing: listing),
+                  ),
+                );
+              },
+              child: const Icon(Icons.edit, color: AppTheme.primaryDark),
+            )
+          : null,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Embedded Map — dark themed
             SizedBox(
               height: 220,
               child: FlutterMap(
@@ -93,13 +110,11 @@ class ListingDetailScreen extends StatelessWidget {
               ),
             ),
 
-            // Listing Details
             Padding(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Category badge
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,
@@ -120,7 +135,6 @@ class ListingDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 16),
 
-                  // Name
                   Text(
                     listing.name,
                     style: const TextStyle(
@@ -131,7 +145,6 @@ class ListingDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 20),
 
-                  // Description
                   Text(
                     listing.description,
                     style: const TextStyle(
@@ -145,7 +158,6 @@ class ListingDetailScreen extends StatelessWidget {
                   const Divider(),
                   const SizedBox(height: 16),
 
-                  // Info rows
                   _buildInfoRow(Icons.location_on, 'Address', listing.address),
                   const SizedBox(height: 14),
                   _buildInfoRow(Icons.phone, 'Contact', listing.contactNumber),
@@ -157,7 +169,6 @@ class ListingDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
 
-                  // Navigate Button
                   SizedBox(
                     width: double.infinity,
                     height: 56,

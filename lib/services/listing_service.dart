@@ -5,7 +5,6 @@ import '../utils/constants.dart';
 class ListingService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  /// Get a real-time stream of all listings ordered by timestamp descending
   Stream<List<ListingModel>> getAllListings() {
     return _firestore
         .collection(AppConstants.listingsCollection)
@@ -18,7 +17,6 @@ class ListingService {
         );
   }
 
-  /// Get a real-time stream of listings created by a specific user (My Listings)
   Stream<List<ListingModel>> getUserListings(String userId) {
     return _firestore
         .collection(AppConstants.listingsCollection)
@@ -32,14 +30,12 @@ class ListingService {
         );
   }
 
-  /// Create a new listing
   Future<void> createListing(ListingModel listing) async {
     await _firestore
         .collection(AppConstants.listingsCollection)
         .add(listing.toMap());
   }
 
-  /// Update an existing listing
   Future<void> updateListing(ListingModel listing) async {
     await _firestore
         .collection(AppConstants.listingsCollection)
@@ -47,7 +43,6 @@ class ListingService {
         .update(listing.toMap());
   }
 
-  /// Delete a listing by ID
   Future<void> deleteListing(String listingId) async {
     await _firestore
         .collection(AppConstants.listingsCollection)

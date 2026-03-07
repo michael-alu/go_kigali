@@ -54,11 +54,6 @@ class GoKigaliApp extends StatelessWidget {
   }
 }
 
-/// The AuthWrapper listens to the Firebase Auth Stream
-/// and decides which screen to show:
-/// 1. Logged out -> LoginScreen
-/// 2. Logged in, not verified -> EmailVerificationScreen
-/// 3. Logged in, verified -> HomeScreen
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
 
@@ -90,7 +85,6 @@ class AuthWrapper extends StatelessWidget {
   }
 }
 
-/// A branded splash screen shown while Firebase initializes
 class _SplashScreen extends StatelessWidget {
   const _SplashScreen();
 

@@ -12,7 +12,6 @@ import '../directory/listing_detail_screen.dart';
 class MapScreen extends StatelessWidget {
   const MapScreen({super.key});
 
-  /// Launch navigation to a specific listing
   Future<void> _launchNavigation(ListingModel listing) async {
     final url = Uri.parse(
       'https://www.google.com/maps/dir/?api=1&destination=${listing.latitude},${listing.longitude}',
@@ -22,7 +21,6 @@ class MapScreen extends StatelessWidget {
     }
   }
 
-  /// Get category-based marker color
   Color _getMarkerColor(String category) {
     switch (category) {
       case 'Hospital':
@@ -41,12 +39,15 @@ class MapScreen extends StatelessWidget {
         return Colors.purple;
       case 'Utility Office':
         return Colors.grey;
+      case 'School':
+        return Colors.indigo;
+      case 'University':
+        return Colors.cyan;
       default:
         return AppTheme.accentGold;
     }
   }
 
-  /// Get category icon
   IconData _getCategoryIcon(String category) {
     switch (category) {
       case 'Hospital':
@@ -65,6 +66,10 @@ class MapScreen extends StatelessWidget {
         return Icons.camera_alt;
       case 'Utility Office':
         return Icons.business;
+      case 'School':
+        return Icons.school;
+      case 'University':
+        return Icons.grade;
       default:
         return Icons.place;
     }
@@ -91,7 +96,6 @@ class MapScreen extends StatelessWidget {
                 initialZoom: 13.0,
               ),
               children: [
-                // Dark-themed CartoDB tile layer
                 TileLayer(
                   urlTemplate:
                       'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
@@ -100,7 +104,6 @@ class MapScreen extends StatelessWidget {
                   maxZoom: 20,
                   retinaMode: true,
                 ),
-                // Custom styled markers
                 MarkerLayer(
                   markers: listings.map((listing) {
                     final color = _getMarkerColor(listing.category);
@@ -136,7 +139,6 @@ class MapScreen extends StatelessWidget {
                               ),
                               child: Icon(icon, color: Colors.white, size: 18),
                             ),
-                            // Drop arrow pointer
                             Icon(Icons.arrow_drop_down, color: color, size: 14),
                           ],
                         ),
@@ -149,7 +151,6 @@ class MapScreen extends StatelessWidget {
     );
   }
 
-  /// Show a bottom sheet with listing info when a marker is tapped
   void _showListingBottomSheet(BuildContext context, ListingModel listing) {
     showModalBottomSheet(
       context: context,
@@ -164,7 +165,6 @@ class MapScreen extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Handle bar
               Center(
                 child: Container(
                   width: 40,
@@ -177,7 +177,6 @@ class MapScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // Category badge
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 10,
@@ -198,7 +197,6 @@ class MapScreen extends StatelessWidget {
               ),
               const SizedBox(height: 10),
 
-              // Name
               Text(
                 listing.name,
                 style: const TextStyle(
@@ -209,7 +207,6 @@ class MapScreen extends StatelessWidget {
               ),
               const SizedBox(height: 6),
 
-              // Address
               Row(
                 children: [
                   const Icon(
@@ -233,7 +230,6 @@ class MapScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // Action buttons
               Row(
                 children: [
                   Expanded(

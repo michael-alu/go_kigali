@@ -1,9 +1,7 @@
 class AppConstants {
-  // ── Kigali Default Coordinates ──
   static const double kigaliLat = -1.9403;
   static const double kigaliLng = 29.8739;
 
-  // ── Listing Categories ──
   static const List<String> categories = [
     'Hospital',
     'Police Station',
@@ -13,9 +11,10 @@ class AppConstants {
     'Park',
     'Tourist Attraction',
     'Utility Office',
+    'School',
+    'University',
   ];
 
-  // ── Firestore Collection Names ──
   static const String usersCollection = 'users';
   static const String listingsCollection = 'listings';
 }
