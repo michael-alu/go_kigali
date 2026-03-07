@@ -1,17 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import '../../models/listing_model.dart';
 import '../../providers/auth_provider.dart';
 import '../../utils/app_theme.dart';
 import '../listings/edit_listing_screen.dart';
 
-class ListingDetailScreen extends StatelessWidget {
+class ListingDetailScreen extends StatefulWidget {
   final ListingModel listing;
 
   const ListingDetailScreen({super.key, required this.listing});
+
+  @override
+  State<ListingDetailScreen> createState() => _ListingDetailScreenState();
+}
+
+class _ListingDetailScreenState extends State<ListingDetailScreen> {
+  late final WebViewController _mapController;
+
+  @override
+  void initState() {
+    super.initState();
+    final lat = widget.listing.latitude;
+    final lng = widget.listing.longitude;
+    _mapController = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(AppTheme.primaryDark)
+      ..loadHtmlString('''
+        <!DOCTYPE html>
+        <html>
+        <head><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+        <body style="margin:0;padding:0;overflow:hidden">
+          <iframe
+            src="https://maps.google.com/maps?q=$lat,$lng&z=15&output=embed"
+            style="width:100%;height:100%;border:0"
+            allowfullscreen
+            loading="eager">
+          </iframe>
+        </body>
+        </html>
+      ''');
+  }
+
+  ListingModel get listing => widget.listing;
 
   Future<void> _launchNavigation() async {
     final url = Uri.parse(
@@ -24,7 +56,6 @@ class ListingDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final location = LatLng(listing.latitude, listing.longitude);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final isOwner = authProvider.currentUser?.uid == listing.createdBy;
 
@@ -50,63 +81,8 @@ class ListingDetailScreen extends StatelessWidget {
           children: [
             SizedBox(
               height: 220,
-              child: FlutterMap(
-                options: MapOptions(initialCenter: location, initialZoom: 15.0),
-                children: [
-                  TileLayer(
-                    urlTemplate:
-                        'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png',
-                    subdomains: const ['a', 'b', 'c', 'd'],
-                    userAgentPackageName: 'com.example.go_kigali',
-                    maxZoom: 20,
-                    retinaMode: true,
-                  ),
-                  MarkerLayer(
-                    markers: [
-                      Marker(
-                        point: location,
-                        width: 44,
-                        height: 50,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                color: AppTheme.accentGold,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 2.5,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppTheme.accentGold.withValues(
-                                      alpha: 0.5,
-                                    ),
-                                    blurRadius: 8,
-                                    spreadRadius: 1,
-                                  ),
-                                ],
-                              ),
-                              child: const Icon(
-                                Icons.place,
-                                color: Colors.white,
-                                size: 18,
-                              ),
-                            ),
-                            Icon(
-                              Icons.arrow_drop_down,
-                              color: AppTheme.accentGold,
-                              size: 14,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+              child: ClipRRect(
+                child: WebViewWidget(controller: _mapController),
               ),
             ),
 
